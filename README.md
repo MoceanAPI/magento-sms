@@ -29,6 +29,44 @@
 
 `php bin/magento cache:clean`
 
+6. Configure the extension in `Admin Panel` at `Admin Panel => Stores => Configuration => MoceanAPI`
+
+![image](https://user-images.githubusercontent.com/24620178/186089612-cc492b03-1de1-4a31-b920-d23ff1cb3c77.png)
+
+## Configuration
+
+1. Mocean API Key
+
+You can get Mocean API key from [MoceanAPI Dashboard](https://dashboard.moceanapi.com)
+
+2. Mocean API Secret
+
+You can get Mocean API key from [MoceanAPI Dashboard](https://dashboard.moceanapi.com)
+
+3. Sender Name
+
+Your business name
+
+4. Admin phone number
+
+Your phone number to get notified on new orders
+
+5. Debug
+
+If set to yes, will log API Calls
+
+### SMS Settings
+
+1. Send SMS to Admin on new order
+
+Select yes and you will be able to customise the SMS template to send.
+
+2. Send SMS to your customer when their order status changed to SHIPPED
+
+Select yes and you will be able to customise the SMS template to send to your customer when their order status changed to shipped
+
+![image](https://user-images.githubusercontent.com/24620178/186100994-1055581c-08c1-480d-9568-f51616695632.png)
+
 ## FAQ
 1. Can I get Test Credits ?
 
