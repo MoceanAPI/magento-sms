@@ -3,6 +3,7 @@
 ## Contents
 - [Features](#features)
 - [Installation](#installation)
+- [Configuration](#configuration)
 - [Frequently Asked Questions](#faq)
 
 ## Features
