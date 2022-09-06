@@ -20,7 +20,7 @@
   "autoload": {
     "files": [ "registration.php" ],
     "psr-4": {
-      "Mocean\\Sms\\": ""
+      "Mocean\\MagentoSms\\": ""
     }
   }
 }

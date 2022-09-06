@@ -1,5 +1,5 @@
 <?php
-namespace Mocean\Sms\Helper;
+namespace Mocean\MagentoSms\Helper;
 
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\Filesystem\DirectoryList;
@@ -12,15 +12,17 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public $logger;
     private $_resource;
     private $_pricingHelper;
-    
+
     public function __construct(
         Context $context,
         DirectoryList $directory_list,
         ResourceConnection $resource,
-        PricingHelper $pricingHelper
+        PricingHelper $pricingHelper,
+        \Psr\Log\LoggerInterface $logger
     ) {
         $this->_resource = $resource;
         $this->_pricingHelper = $pricingHelper;
+        $this->logger = $logger;
         parent::__construct($context);
     }
     public function getStoreConfig($path)
@@ -59,7 +61,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
     public function getNewOrderMessage($order)
     {
-        
+
         $variables = $this->getVariables();
         $values =  [ $this->getIncrementId($order), strip_tags($this->_pricingHelper->currency($order->getGrandTotal())), $order->getStatus(), $order->getShippingDescription(), $order->getPayment()->getMethodInstance()->getTitle(), $order->getCustomerFirstname().' '.$order->getCustomerLastname(), $order->getCustomerEmail() ];
         $message = $this->getStoreConfig('mocean/messages/sendsmsonnewordermessage');
@@ -74,30 +76,28 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     }
     public function sendSMS($to, $body, $action, $id_order, $countryCode)
     {
-        try {
-            $source = 'magentov2';
-            $from = $this->getStoreConfig('mocean/settings/sender');
-            $from = preg_replace('/\s+/', '', $from);
-            $from = substr($from, 0, 11);
+        $source = 'magentov2';
+        $from = $this->getStoreConfig('mocean/settings/sender');
+        $from = preg_replace('/\s+/', '', $from);
+        $from = substr($from, 0, 11);
 
-            $username = $this->getStoreConfig('mocean/settings/username');
-            $password = $this->getStoreConfig('mocean/settings/password');
-            $message = ['mocean-medium' => $source, 'mocean-api-key' => $username, 'mocean-api-secret' => $password, 'mocean-from' => $from, 'mocean-to' => $to, 'mocean-text' => $body];
+        $username = $this->getStoreConfig('mocean/settings/username');
+        $password = $this->getStoreConfig('mocean/settings/password');
+        $message = ['mocean-medium' => $source, 'mocean-api-key' => $username, 'mocean-api-secret' => $password, 'mocean-from' => $from, 'mocean-to' => $to, 'mocean-text' => $body, 'mocean-resp-format' => "JSON"];
 
-            // set URL and other appropriate options
-            $options = [CURLOPT_URL => "https://rest.moceanapi.com/rest/2/sms", CURLOPT_HEADER => false, CURLOPT_POST => true, CURLOPT_POSTFIELDS => http_build_query($message) ];
-            // create a new cURL resource
-            $ch = curl_init();
-            curl_setopt_array($ch, $options);
+        // set URL and other appropriate options
+        $options = [CURLOPT_URL => "https://rest.moceanapi.com/rest/2/sms", CURLOPT_HEADER => false, CURLOPT_POST => true, CURLOPT_POSTFIELDS => http_build_query($message), CURLOPT_RETURNTRANSFER => true ];
+        // create a new cURL resource
+        // problem here
+        $ch = curl_init();
+        curl_setopt_array($ch, $options);
 
-            // grab URL and pass it to the browser
-            $response = curl_exec($ch);
-            if (!$response) {
-                throw new \Magento\Framework\Exception\LocalizedException(curl_error($ch));
-            }
-            curl_close($ch);
-        } catch (\Magento\Framework\Exception\LocalizedException $e) {
-		throw new \Magento\Framework\Exception\LocalizedException($e->getMessage());
-	}
+        // grab URL and pass it to the browser
+        $response = curl_exec($ch);
+        $this->logger->info(print_r($response, 1));
+        if (!$response) {
+            throw new \Magento\Framework\Exception\LocalizedException(curl_error($ch));
+        }
+        curl_close($ch);
     }
 }
