@@ -20,7 +20,7 @@
 
 3. Enable the extension and clear static view files using below command
 
-`php bin/magento module:enable Mocean_Sms --clear-static-content`
+`php bin/magento module:enable Mocean_MagentoSms --clear-static-content`
 
 4. Register the extension using below command
 
